@@ -1,0 +1,3 @@
+bot/*.json
+bot/*.txt
+__pycache__
