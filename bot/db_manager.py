@@ -59,3 +59,6 @@ class DBManager():
                 "$set": diff_obj
             }
         )
+
+    def get_user_movies(self, user):
+        return [item for item in self.collection.find({"user": f"{user}"})]

@@ -197,7 +197,6 @@ class MovieForm(ui.Modal, title='Questionnaire Response'):
         await interaction.followup.send("Select Options:", view=display_me)
 
 ### $ Query ###
-
 def construct_update_view(result):
     print("Construct Called")
     update_view = ModularView(update=True)
@@ -214,6 +213,11 @@ async def call_db_diff_update():
     filtered = {k:v for (k,v) in diff_store.items() if k not in ['_id', 'user']}
     data_diff = {k: data_store[k]for k in data_store if k in data_store and data_store[k] != filtered[k]}
     manager.update_user_movie_by_title(diff_store['user'], diff_store['title'], data_diff)
+
+async def get_movies_of(ctx, user):
+    result = manager.get_user_movies(user=user)
+    titles = [e['title'] for e in result] # For now
+    await ctx.send('\n'.join(titles))
 
 client = ClientClass()
 
@@ -234,6 +238,14 @@ async def update_movie(ctx : commands.Context, args):
     # Clear data_store, except title
     data_store['title'] = result['title']
     await ctx.send("Update", view=construct_update_view(result))
+
+@client.command()
+async def my_movies(ctx : commands.Context):
+    await get_movies_of(ctx, ctx.author.name)
+
+@client.command()
+async def movies_of(ctx : commands.Context, args):
+    await get_movies_of(ctx, args)
 
 @client.command()
 async def hello(ctx : commands.Context):
