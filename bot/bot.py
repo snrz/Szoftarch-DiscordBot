@@ -1,9 +1,12 @@
 import discord
 from discord.ext import commands
 from discord import ui
-import libraries.conf_parser as conf_parser
+import re
 
-access_token, guild_id, imdb_file = conf_parser.parse_credentials_form_config('config.json')
+import libraries.conf_parser as conf_parser
+import db_manager
+
+access_token, guild_id, imdb_file = conf_parser.parse_credentials_form_config('config/bot_config.json')
 
 my_intents = discord.Intents.default()
 my_intents.messages = True
@@ -28,6 +31,16 @@ async def save_field_value(interaction : discord.Interaction, value, field_type 
         return    
     await interaction.response.defer()
 
+async def get_items_by_title(file_path, target : str):
+        if target == '':
+            print("Target not specified")
+            return None # TODO: Proper error handling
+        with open(file_path, 'r') as infile:
+            content = infile.read()
+            q = re.compile(f'[^\"]*{target}[^\"]*')
+            result = list(set(q.findall(content)))
+            # Only return the 25 best matches as ui.Select has limited capabilities
+            return result[:25]
 
 class ClientClass(commands.Bot):
     def __init__(self):
@@ -132,8 +145,12 @@ class ButtonView(ui.View):
         label="Submit",
         style=discord.ButtonStyle.blurple
     )
-    async def on_submit_press(self, interaction, button):
+    async def on_submit_press(self, interaction : discord.Interaction, button):
         await interaction.response.send_message(f"Input fields ready")
+        print(interaction.user)
+        data_store["user"] = interaction.user.name
+        print(data_store)
+        manager.write_obj_to_collection(data_store)
 
     @discord.ui.button(
         label="Clear",
@@ -156,7 +173,7 @@ class MovieForm(ui.Modal, title='Questionnaire Response'):
         
         await interaction.response.defer()
 
-        filtering_routine = conf_parser.get_items_by_title(imdb_file, self.name)
+        filtering_routine = get_items_by_title(imdb_file, self.name)
         filtered_list = await filtering_routine
 
         display_me = ModularView()
@@ -178,5 +195,7 @@ async def hello(ctx : commands.Context):
     await ctx.send("H E L L O")
 
 
-client.run(access_token)
+if __name__ == '__main__':
+    manager = db_manager.DBManager()
+    client.run(access_token)
 
