@@ -21,13 +21,19 @@ data_store = {
     'audience': None
 }
 
-async def save_field_value(interaction : discord.Interaction, value, field_type : str):
+diff_store = {}
+
+def set_diff_store(d : dict):
+    for k,v in d.items():
+        diff_store[k] = v
+
+async def save_field_value(interaction : discord.Interaction, value, field_type : str, update : bool):
     data_store[field_type] = value
     print (data_store)
     if all(item != None for item in data_store.values()):
         print("Store FULL")
         await interaction.response.defer()
-        await interaction.followup.send("Ready to submit", view=ButtonView())
+        await interaction.followup.send("Ready to submit", view=ButtonView(update=update))
         return    
     await interaction.response.defer()
 
@@ -56,8 +62,10 @@ class ClientClass(commands.Bot):
 
 
 class ModularView(ui.View):
-    def __init__(self):
+    def __init__(self, update : bool = False):
         super().__init__()
+        print("Modular View Init")
+        self.update = update
 
     @discord.ui.select(
         options = [], # Generated at runtime
@@ -67,7 +75,7 @@ class ModularView(ui.View):
     )
     async def title_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
         print (f"Title picker selection: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'title')
+        await save_field_value(interaction, select.values[0], 'title', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -84,7 +92,7 @@ class ModularView(ui.View):
     )
     async def genre_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
         print (f"Genre picker selection: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'genre')
+        await save_field_value(interaction, select.values[0], 'genre', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -101,7 +109,7 @@ class ModularView(ui.View):
     )
     async def rating_callback(self, interaction, select):
         print(f"Rating provided: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'rating')
+        await save_field_value(interaction, select.values[0], 'rating', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -118,7 +126,7 @@ class ModularView(ui.View):
     )
     async def age_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
         print(f"Age-group: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'agegroup')
+        await save_field_value(interaction, select.values[0], 'agegroup', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -133,21 +141,27 @@ class ModularView(ui.View):
     )
     async def audience_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
         print(f"Recommended Audience: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'audience')
+        await save_field_value(interaction, select.values[0], 'audience', self.update)
         #await interaction.response.defer()
 
 
 class ButtonView(ui.View):
-    def __init__(self):
+    def __init__(self, update : bool = False):
         super().__init__()
-
+        self.update = update
+    
     @discord.ui.button(
         label="Submit",
         style=discord.ButtonStyle.blurple
     )
     async def on_submit_press(self, interaction : discord.Interaction, button):
         await interaction.response.send_message(f"Input fields ready")
-        manager.write_obj_to_collection({**data_store, **{'user': f"{interaction.user.name}"}})
+        if self.update:
+            await call_db_diff_update()
+        else:
+            manager.write_obj_to_collection({**data_store, **{'user': f"{interaction.user.name}"}})
+        for key in data_store:
+            data_store[key] = None
 
     @discord.ui.button(
         label="Clear",
@@ -182,12 +196,44 @@ class MovieForm(ui.Modal, title='Questionnaire Response'):
         #TODO: Investigate ephemeral behaviour
         await interaction.followup.send("Select Options:", view=display_me)
 
+### $ Query ###
+
+def construct_update_view(result):
+    print("Construct Called")
+    update_view = ModularView(update=True)
+    #print(update_view.children[0].values)
+    update_view.children[0].options.append(
+        discord.SelectOption(
+            label=result['title'],
+            default=True
+        )
+    )
+    return update_view
+
+async def call_db_diff_update():
+    filtered = {k:v for (k,v) in diff_store.items() if k not in ['_id', 'user']}
+    data_diff = {k: data_store[k]for k in data_store if k in data_store and data_store[k] != filtered[k]}
+    manager.update_user_movie_by_title(diff_store['user'], diff_store['title'], data_diff)
 
 client = ClientClass()
 
 @client.tree.command(name='toggle_test', guild=discord.Object(id=guild_id))
 async def testmodal(interaction : discord.Interaction):
     await interaction.response.send_modal(MovieForm())
+
+@client.command()
+async def update_movie(ctx : commands.Context, args):
+    ''' Update movie from users previous updates (search by title) '''
+    print(args) # TODO: Validation
+    result = manager.get_user_movie_by_title(ctx.author.name, args)
+    set_diff_store(result)
+    if not result:
+        ctx.send("Couldn't find your movie. Upload it first.")
+        return
+    
+    # Clear data_store, except title
+    data_store['title'] = result['title']
+    await ctx.send("Update", view=construct_update_view(result))
 
 @client.command()
 async def hello(ctx : commands.Context):

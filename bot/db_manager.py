@@ -35,3 +35,27 @@ class DBManager():
 
     def write_obj_to_collection(self,  obj : dict, coll_name : str = 'movies'):
         self.collection.insert_one(obj)
+
+    def get_user_movie_by_title(self, user, title):
+        data = self.collection.find_one({
+            "user": f"{user}",
+            "title": f"{title}"
+        })
+        if not data:
+            print(f"[DBManager]: Entry not found for u:{user} t:{title}")
+            # TODO: Exception
+            return None
+        print (f"Got Obj: {data}")
+        return data
+
+    def update_user_movie_by_title(self, user, title, diff_obj):
+
+        self.collection.update_one(
+            {
+                "user": f"{user}",
+                "title": f"{title}"
+            },
+            {
+                "$set": diff_obj
+            }
+        )
