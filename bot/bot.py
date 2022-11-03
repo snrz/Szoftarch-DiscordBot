@@ -147,17 +147,16 @@ class ButtonView(ui.View):
     )
     async def on_submit_press(self, interaction : discord.Interaction, button):
         await interaction.response.send_message(f"Input fields ready")
-        print(interaction.user)
-        data_store["user"] = interaction.user.name
-        print(data_store)
-        manager.write_obj_to_collection(data_store)
+        manager.write_obj_to_collection({**data_store, **{'user': f"{interaction.user.name}"}})
 
     @discord.ui.button(
         label="Clear",
         style=discord.ButtonStyle.danger
     )
-    async def on_clear_press(self, interaction, button):
-        await interaction.response.send_message(f"To be implemented ..")
+    async def on_clear_press(self, interaction : discord.Interaction, button):
+        for key in data_store:
+            data_store[key] = None
+        await interaction.response.send_modal(MovieForm())
     
 
 class MovieForm(ui.Modal, title='Questionnaire Response'):
