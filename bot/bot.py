@@ -214,10 +214,31 @@ async def call_db_diff_update():
     data_diff = {k: data_store[k]for k in data_store if k in data_store and data_store[k] != filtered[k]}
     manager.update_user_movie_by_title(diff_store['user'], diff_store['title'], data_diff)
 
+async def send_ctx_reply(ctx, message):
+    await ctx.send(message) #TODO: Refactor
+
 async def get_movies_of(ctx, user):
     result = manager.get_user_movies(user=user)
     titles = [e['title'] for e in result] # For now
-    await ctx.send('\n'.join(titles))
+    return titles
+
+async def delete_movie_of(ctx, user, title): #TODO: Refactor
+    result = await get_movies_of(ctx, user=user)
+    print(result)
+    if title not in result:
+        await ctx.send(f'Could not find "{title}" in your movies')
+    else:
+        manager.delete_user_movie_by_title(user=user, title=title)
+        await ctx.send(f'{title} - Deleted.')
+
+async def delete_movies_of(user):
+    manager.delete_user_movies(user)
+    
+async def get_movies_by_query(ctx, query):
+    r = manager.get_user_movies_by_query(query)
+    print(r)
+    rs = '\n'.join(r)
+    await send_ctx_reply(ctx, f"Result: \n{rs}")
 
 client = ClientClass()
 
@@ -245,7 +266,21 @@ async def my_movies(ctx : commands.Context):
 
 @client.command()
 async def movies_of(ctx : commands.Context, args):
-    await get_movies_of(ctx, args)
+    r = await get_movies_of(ctx, args)
+    await send_ctx_reply(ctx, '\n'.join(r))
+
+@client.command()
+async def delete_my_movie(ctx : commands.Context, args):
+    await delete_movie_of(ctx, ctx.author.name, args)
+
+@client.command()
+async def delete_my_movies(ctx : commands.Context):
+    await delete_movies_of(ctx.author.name)
+    await send_ctx_reply(ctx, "Movie list deleted.")
+
+@client.command()
+async def spec_movies(ctx : commands.Context, args):
+    await get_movies_by_query(ctx, args)
 
 @client.command()
 async def hello(ctx : commands.Context):
