@@ -209,7 +209,7 @@ def construct_update_view(result):
     )
     return update_view
 
-async def call_db_diff_update():
+async def call_db_diff_update(): # TODO: Refactor
     filtered = {k:v for (k,v) in diff_store.items() if k not in ['_id', 'user']}
     data_diff = {k: data_store[k]for k in data_store if k in data_store and data_store[k] != filtered[k]}
     manager.update_user_movie_by_title(diff_store['user'], diff_store['title'], data_diff)

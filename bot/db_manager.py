@@ -44,13 +44,6 @@ class DBManager():
         print(f)
         return f
 
-    def format_response(self, resp):
-        r = []
-        for item in resp:
-            del item['_id']
-            r.append(item.__str__())
-        return r
-
     def verify_db(self, db_name : str = 'bot'):
         if db_name not in self.client.list_database_names():
             print(f"[DBManager]: Initializing {db_name} database ..")
@@ -71,7 +64,7 @@ class DBManager():
         data = self.collection.find_one({
             "user": f"{user}",
             "title": f"{title}"
-        })
+        }, {'_id': False})
         if not data:
             print(f"[DBManager]: Entry not found for u:{user} t:{title}")
             # TODO: Exception
@@ -99,9 +92,9 @@ class DBManager():
     def get_user_movies_by_query(self, query):
         search_filter = self.create_filter_from_query(query)
         if not search_filter.get('user', []):
-            return self.format_response(self.collection.find(search_filter).sort('rating', -1).limit(5)) # Global Top 100
-        return self.format_response(self.collection.find(search_filter))
-
+            return self.collection.find(search_filter, {'_id': False}).sort('rating', -1).limit(100)
+        return self.collection.find(search_filter, {'_id': False}) # TODO Refactor TopMovies logic
+    
     def test_query(self):
         return [i for i in self.collection.find({'user': 'test', 'rating': {'$gte': '4'}})]
 
@@ -115,6 +108,6 @@ class DBManager():
                 'audience': 'Best With Friends',
                 'user': 'test'
             })
-
+    
     def get_user_movies(self, user):
-        return [item for item in self.collection.find({"user": f"{user}"})]
+        return [item for item in self.collection.find({"user": f"{user}"}, {'_id': False})]
