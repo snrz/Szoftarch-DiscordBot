@@ -1,0 +1,17 @@
+<mat-card class="my-card">
+    <mat-card-content>
+       <form class="my-form">
+           <mat-form-field appearance="fill">
+               <mat-label>Title</mat-label>
+               <mat-select>
+                <mat-option *ngFor="let movie of movies" [value]="movie.title">
+                  {{movie.title}}
+                </mat-option>
+              </mat-select>
+           </mat-form-field>
+       </form>
+    </mat-card-content>
+    <mat-card-actions>
+       <button mat-raised-button (click)="edit()" color="primary">Edit</button>
+    </mat-card-actions>
+</mat-card>

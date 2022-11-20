@@ -11,6 +11,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './home-page/home-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { RedirectComponent } from './redirect/redirect.component';
+import { HttpClientModule } from '@angular/common/http';
+import { UpdateComponent } from './update/update.component';
+import { UploadComponent } from './upload/upload.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +23,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AdminLoginPageComponent,
     MainToolbarComponent,
     HomePageComponent,
-    DashboardComponent
+    DashboardComponent,
+    RedirectComponent,
+    UpdateComponent,
+    UploadComponent
   ],
   imports: [
     BrowserModule,
@@ -29,11 +36,14 @@ import { DashboardComponent } from './dashboard/dashboard.component';
         {path: '', component: HomePageComponent},
         {path: 'login', component: LoginPageComponent},
         {path: 'admin-login', component: AdminLoginPageComponent},
-        {path: 'dashboard', component: DashboardComponent}
+        {path: 'dashboard', component: DashboardComponent},
+        {path: 'redirect', component: RedirectComponent},
+        {path: 'update', component: UpdateComponent}
       ]
     ),
     NoopAnimationsModule,
-    MaterialModule
+    MaterialModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
