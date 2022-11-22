@@ -108,6 +108,9 @@ class DBManager():
                 'audience': 'Best With Friends',
                 'user': 'test'
             })
-    
+
     def get_user_movies(self, user):
         return [item for item in self.collection.find({"user": f"{user}"}, {'_id': False})]
+    
+    def user_lookup(self, user_obj : dict, collection : str = 'bot_admin'):
+        return self.db[collection].find_one(user_obj)

@@ -60,6 +60,13 @@ def upload_handler(r):
         manager.write_obj_to_collection(data)
         return json.dumps({'success': True}), 200, {'ContentType':'application/json'} 
 
+def login_handler(r):
+    data = dict(r)
+    if manager.user_lookup(data):
+        return json.dumps({'success': True}), 200, {'ContentType':'application/json'} 
+    else:
+        return json.dumps({'success': False}), 404, {'ContentType':'application/json'}
+
 @app.route("/")
 def hello_world():
     return "<p>Mellow World</p>"
@@ -75,6 +82,10 @@ def get_movies_by_title(user, title):
 @app.get("/movies/query/<query_str>")
 def get_movies_by_query(query_str):
     return list(manager.get_user_movies_by_query(query=query_str))
+
+@app.post("/admin/login")
+def admin_login():
+    return login_handler(request.json)
 
 @app.post("/delete")
 def delete_user_movie():
