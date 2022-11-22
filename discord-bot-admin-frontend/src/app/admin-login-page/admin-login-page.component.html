@@ -5,9 +5,9 @@
      <mat-card-content>
         <form class="my-form">
            <mat-form-field class="full-width">
-              <mat-label>Email</mat-label>
-              <input  matInput  placeholder="Email" [formControl]="email" name="email"  required>
-              <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+              <mat-label>Username</mat-label>
+              <input  matInput  placeholder="Username" [formControl]="username" name="username"  required>
+              <mat-error *ngIf="username.invalid">{{getErrorMessage()}}</mat-error>
            </mat-form-field>
            <br>
            <mat-form-field class="full-width">
@@ -18,6 +18,6 @@
         </form>
      </mat-card-content>
      <mat-card-actions>
-        <button mat-raised-button [disabled]="email.invalid || password.invalid" (click)="login()" color="primary">LOGIN</button>
+        <button mat-raised-button [disabled]="username.invalid || password.invalid" (click)="login()" color="primary">LOGIN</button>
      </mat-card-actions>
   </mat-card>

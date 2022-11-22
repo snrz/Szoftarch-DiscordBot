@@ -38,7 +38,8 @@ import { UploadComponent } from './upload/upload.component';
         {path: 'admin-login', component: AdminLoginPageComponent},
         {path: 'dashboard', component: DashboardComponent},
         {path: 'redirect', component: RedirectComponent},
-        {path: 'update', component: UpdateComponent}
+        {path: 'update', component: UpdateComponent},
+        {path: 'upload', component: UploadComponent}
       ]
     ),
     NoopAnimationsModule,

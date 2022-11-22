@@ -1,9 +1,11 @@
 from flask import Flask, request, abort
+from flask_cors import CORS
 import json
 
 import db_manager
 
 app = Flask(__name__)
+CORS(app)
 
 manager = db_manager.DBManager() # For now
 
