@@ -4,6 +4,7 @@ import { DataService } from '../services/data.service';
 import { Movie } from '../models/movie';
 import * as titles_config_file from '../../../../bot/config/titles_config.json'
 import { HttpClient } from '@angular/common/http';
+import { MovieService } from '../services/movie.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +19,7 @@ export class DashboardComponent implements OnInit {
   displayedColumnsTop10: string[] = ['Title', 'Rating', 'Audience', 'Genre', 'Age', 'Actions']
   titles_config: any
 
-  constructor(private dataService: DataService, private router: Router, private http: HttpClient) { }
+  constructor(private dataService: DataService, private movieService: MovieService,private router: Router, private http: HttpClient) { }
 
   ngOnInit(): void {
     if(!this.dataService.is_user_logged_in){
@@ -26,6 +27,8 @@ export class DashboardComponent implements OnInit {
     }
     this.titles_config = titles_config_file
     this.dataService.movie_titles = this.titles_config.titles
+    this.movieService.getMoviesOfUser(this.dataService.user_logged_in).subscribe((res) => this.userTop10 = res)
+    this.movieService.getGlobalTop100().subscribe((res) => this.globalTop100 = res)
   }
 
   edit(movie: Movie){

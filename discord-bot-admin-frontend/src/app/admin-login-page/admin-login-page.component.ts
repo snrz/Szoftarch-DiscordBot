@@ -1,7 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { DataService } from '../services/data.service';
+import * as admin_config from '../../../../bot/config/admin_config.json';
+import {hashSync} from 'bcryptjs';
 
 @Component({
   selector: 'app-admin-login-page',
@@ -10,22 +14,39 @@ import { AuthService } from '../services/auth.service';
 })
 export class AdminLoginPageComponent implements OnInit {
 
-  error: string = "Email or password incorrect. Please try again.";
+  errormsg: string = "Username or password incorrect. Please try again.";
   username = new FormControl('', [Validators.required]);
   password = new FormControl('', [Validators.required]);
+  admin_conf: any
   
-  constructor(private http: HttpClient, private auth: AuthService) { }
+  constructor(private http: HttpClient, private auth: AuthService, private dataService: DataService, private router: Router) { }
 
   ngOnInit(): void {
+    this.admin_conf = admin_config
   }
 
   login(){
+    console.log(this.admin_conf.admin1)
     let user_cred = {
       "username": this.username.value,
-      "password": this.password.value 
+      "password": hashSync(this.password.value, this.admin_conf.admin1) 
     }
     
-    this.auth.loginAdmin(user_cred).subscribe(resp => console.log(resp))
+    console.log(user_cred)
+
+    this.auth.loginAdmin(user_cred).subscribe((resp) => {
+      if(resp.status == 200){
+        this.dataService.user_logged_in = this.username.value
+        this.dataService.is_user_logged_in = true
+        this.router.navigate(['/dashboard'])
+      }
+    },
+    (error: HttpErrorResponse) => {
+      if(error.status == 404){
+        window.alert(this.errormsg)
+      }
+    }
+    )
   }
 
   getErrorMessage() {

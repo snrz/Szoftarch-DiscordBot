@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Movie } from '../models/movie';
 import { DataService } from '../services/data.service';
+import { MovieService } from '../services/movie.service';
 
 @Component({
   selector: 'app-update',
@@ -11,14 +13,27 @@ import { DataService } from '../services/data.service';
 export class UpdateComponent implements OnInit {
 
   movieToEdit: Movie
-  movies: Movie[]
+  titles: string[]
 
-  constructor(private dataService: DataService, private http: HttpClient) { }
+  constructor(private dataService: DataService, private http: HttpClient, private movieService: MovieService, private router: Router) { }
 
   ngOnInit(): void {
+    this.movieToEdit = this.dataService.movie_to_edit
+    this.titles = this.dataService.movie_titles
   }
 
   edit(){
+    console.log(this.movieToEdit)
+    this.movieService.updateUserMovie(this.movieToEdit).subscribe((resp) => {
+      if(resp.status == 200){
+        this.router.navigate(['/dashboard'])
+      }
+    },
+    (error: HttpErrorResponse) => {
+      if(error.status == 404){
+        window.alert('Something bad happened, could not update movie')
+      }
+    })
 
   }
 
