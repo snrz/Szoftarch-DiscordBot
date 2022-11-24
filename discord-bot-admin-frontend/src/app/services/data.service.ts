@@ -11,6 +11,7 @@ export class DataService {
   access_token: any
   movie_to_edit: Movie
   movie_titles: string[]
+  filtered_titles: string[]
 
   constructor() { }
 }

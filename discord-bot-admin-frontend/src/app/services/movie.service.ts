@@ -35,17 +35,17 @@ export class MovieService {
 
   deleteUserMovie(body: any): Observable<any>{
     let url = this.baseUrl + `delete`
-    return this.http.post<any>(url, body).pipe(catchError(this.handleError))
+    return this.http.post<any>(url, body)
   }
 
   updateUserMovie(body: Movie): Observable<any>{
     let url = this.baseUrl + `update`
-    return this.http.put<any>(url, body).pipe(catchError(this.handleError))
+    return this.http.put<any>(url, body)
   }
 
   uploadUserMovie(body: Movie): Observable<any>{
     let url = this.baseUrl + `upload`
-    return this.http.post<any>(url, body).pipe(catchError(this.handleError))
+    return this.http.post<any>(url, body)
   }
 
 

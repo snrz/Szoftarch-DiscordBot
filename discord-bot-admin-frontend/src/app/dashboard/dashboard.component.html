@@ -8,7 +8,6 @@
 
   <div class="card-holder">
     <mat-card class="data-card">
-      <p>CARD1</p>
       <table mat-table [dataSource]="globalTop100" class="mat-elevation-z8">
         <!--- Note that these columns can be defined in any order.
 						The actual rendered columns are set as a property on the row definition" -->
@@ -48,7 +47,6 @@
     </mat-card>
 
     <mat-card class="data-card">
-      <p>CARD2</p>
       <table mat-table [dataSource]="userTop10" class="mat-elevation-z8">
         <!--- Note that these columns can be defined in any order.
 						The actual rendered columns are set as a property on the row definition" -->
@@ -78,8 +76,8 @@
 
         <!-- Symbol Column -->
         <ng-container matColumnDef="Age">
-          <th mat-header-cell *matHeaderCellDef>Age</th>
-          <td mat-cell *matCellDef="let element">{{ element.age }}</td>
+          <th mat-header-cell *matHeaderCellDef> Age </th>
+          <td mat-cell *matCellDef="let element"> {{element.agegroup}} </td>
         </ng-container>
 
         <ng-container matColumnDef="Actions">

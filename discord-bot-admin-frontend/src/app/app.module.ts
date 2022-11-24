@@ -10,7 +10,7 @@ import { MainToolbarComponent } from './main-toolbar/main-toolbar.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './home-page/home-page.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent, FilterDialog } from './dashboard/dashboard.component';
 import { RedirectComponent } from './redirect/redirect.component';
 import { HttpClientModule } from '@angular/common/http';
 import { UpdateComponent } from './update/update.component';
@@ -26,7 +26,8 @@ import { UploadComponent } from './upload/upload.component';
     DashboardComponent,
     RedirectComponent,
     UpdateComponent,
-    UploadComponent
+    UploadComponent,
+    FilterDialog
   ],
   imports: [
     BrowserModule,

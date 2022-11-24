@@ -3,42 +3,46 @@
        <form class="my-form">
            <mat-form-field appearance="fill">
                <mat-label>Title</mat-label>
-               <mat-select [(value)]="movieToEdit.title">
-                <mat-option *ngFor="let title of titles">
-                  {{title}}
-                </mat-option>
-              </mat-select>
+               <input matInput disabled="true" [(ngModel)]="movieToEdit.title" name="title">
+           </mat-form-field>
+           <mat-form-field appearance="fill">
               <mat-label>Rating</mat-label>
-               <mat-select required [(value)]="movieToEdit.rating">
+               <mat-select [(value)]="movieToEdit.rating">
                 <mat-option value="1">1</mat-option>
                 <mat-option value="2">2</mat-option>
                 <mat-option value="3">3</mat-option>
                 <mat-option value="4">4</mat-option>
                 <mat-option value="5">5</mat-option>
                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
                <mat-label>Audience</mat-label>
-               <mat-select required [(value)]="movieToEdit.audience">
+               <mat-select [(value)]="movieToEdit.audience">
                 <mat-option value="Watch Alone">Watch Alone</mat-option>
                 <mat-option value="For Family Time">For Family Time</mat-option>
                 <mat-option value="Best With Friends">Best With Friends</mat-option>
                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
                <mat-label>Genre</mat-label>
-               <mat-select required [(value)]="movieToEdit.genre">
+               <mat-select [(value)]="movieToEdit.genre">
                 <mat-option value="Horror">Horror</mat-option>
                 <mat-option value="Action">Action</mat-option>
                 <mat-option value="Comedy">Comedy</mat-option>
                 <mat-option value="Sci-fi">Sci-fi</mat-option>
                 <mat-option value="Documentary">Documentary</mat-option>
                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
                <mat-label>Age</mat-label>
-               <mat-select required [(value)]="movieToEdit.agegroup">
+               <mat-select [(value)]="movieToEdit.agegroup">
                 <mat-option value="KN">KN</mat-option>
                 <mat-option value="6">6</mat-option>
                 <mat-option value="12">12</mat-option>
                 <mat-option value="16">16</mat-option>
                 <mat-option value="18">18</mat-option>
                </mat-select>
-           </mat-form-field>
+              </mat-form-field>
        </form>
     </mat-card-content>
     <mat-card-actions>

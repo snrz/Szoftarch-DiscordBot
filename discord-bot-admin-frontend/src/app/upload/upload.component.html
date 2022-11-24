@@ -1,1 +1,55 @@
-<p>upload works!</p>
+<mat-card class="my-card">
+    <mat-card-content>
+       <form class="my-form">
+           <mat-form-field appearance="fill">
+               <mat-label>Title</mat-label>
+               <mat-select [(ngModel)]="movie.title" name="title_select">
+                <mat-option *ngFor="let title of titles" [value]="title">
+                  {{title}}
+                </mat-option>
+              </mat-select>
+           </mat-form-field>
+           <mat-form-field appearance="fill">
+              <mat-label>Rating</mat-label>
+               <mat-select [(value)]="movie.rating">
+                <mat-option value="1">1</mat-option>
+                <mat-option value="2">2</mat-option>
+                <mat-option value="3">3</mat-option>
+                <mat-option value="4">4</mat-option>
+                <mat-option value="5">5</mat-option>
+               </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+               <mat-label>Audience</mat-label>
+               <mat-select [(value)]="movie.audience">
+                <mat-option value="Watch Alone">Watch Alone</mat-option>
+                <mat-option value="For Family Time">For Family Time</mat-option>
+                <mat-option value="Best With Friends">Best With Friends</mat-option>
+               </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+               <mat-label>Genre</mat-label>
+               <mat-select [(value)]="movie.genre">
+                <mat-option value="Horror">Horror</mat-option>
+                <mat-option value="Action">Action</mat-option>
+                <mat-option value="Comedy">Comedy</mat-option>
+                <mat-option value="Sci-fi">Sci-fi</mat-option>
+                <mat-option value="Documentary">Documentary</mat-option>
+               </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+               <mat-label>Age</mat-label>
+               <mat-select [(value)]="movie.agegroup">
+                <mat-option value="KN">KN</mat-option>
+                <mat-option value="6">6</mat-option>
+                <mat-option value="12">12</mat-option>
+                <mat-option value="16">16</mat-option>
+                <mat-option value="18">18</mat-option>
+               </mat-select>
+              </mat-form-field>
+       </form>
+    </mat-card-content>
+    <mat-card-actions>
+       <button mat-raised-button (click)="upload()" color="primary">Save</button>
+    </mat-card-actions>
+</mat-card>

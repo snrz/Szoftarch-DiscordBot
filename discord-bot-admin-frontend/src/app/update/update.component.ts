@@ -19,15 +19,14 @@ export class UpdateComponent implements OnInit {
 
   ngOnInit(): void {
     this.movieToEdit = this.dataService.movie_to_edit
-    this.titles = this.dataService.movie_titles
+    this.titles = this.dataService.filtered_titles
+    console.log(this.movieToEdit)
   }
 
   edit(){
     console.log(this.movieToEdit)
     this.movieService.updateUserMovie(this.movieToEdit).subscribe((resp) => {
-      if(resp.status == 200){
         this.router.navigate(['/dashboard'])
-      }
     },
     (error: HttpErrorResponse) => {
       if(error.status == 404){

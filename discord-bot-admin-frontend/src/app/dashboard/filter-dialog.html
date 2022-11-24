@@ -1,0 +1,11 @@
+<div mat-dialog-content>
+  <p>Search for movie:</p>
+  <mat-form-field appearance="fill">
+    <mat-label>Search</mat-label>
+    <input matInput [(ngModel)]="filter">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button [mat-dialog-close]="filter" cdkFocusInitial>Ok</button>
+</div>
