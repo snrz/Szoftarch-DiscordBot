@@ -1,0 +1,67 @@
+.layout-parent {
+    display: grid;
+    grid-gap: 12px;
+  
+    grid-template-areas:
+      'heading'
+      'cards'
+      'bottom';
+  }
+  
+  .dashboard-header {
+    text-align: right;
+    margin-right: 30px;
+    grid-area: heading;
+  }
+  
+  .card-holder {
+    display: inline-flex;
+    grid-area: cards;
+    justify-content: space-evenly;
+  }
+  
+  .data-card {
+    height: 500px;
+    width: 45%;
+  }
+  
+  .function-area {
+    grid-area: bottom;
+    justify-content: space-around;
+    /*display: inline; */
+  }
+  
+  .output-field {
+    width: 80%;
+    height: 400px;
+    margin-left: 10%;
+    resize: unset;
+    overflow: auto;
+    margin-bottom: 12px;
+  }
+  
+  .bottom-bar {
+    width: 100%;
+    /* display: inline-flex; */
+    /* vertical-align: 20px;
+    margin-left: 10px; */
+    justify-content: space-around;
+    display: inline-flex;
+  }
+  
+  .command-input {
+    width: 80%;
+    margin-left: 10px;
+    margin-right: auto;
+  }
+  
+  .button.box {
+    display: inline;
+    justify-content: space-around;
+  }
+  
+  .mat-raised-button ~ .mat-raised-button {
+    margin-left: 10px;
+    margin-right: auto;
+  }
+  
