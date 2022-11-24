@@ -22,9 +22,9 @@ def delete_handler(r):
     else:
         manager.delete_user_movie_by_title(user=user_name, title=title)
         if not manager.get_user_movie_by_title(user=user_name, title=title):
-            return json.dumps({'success': False}), 404, {'ContentType':'application/json'} 
-        else:
             return json.dumps({'success': True}), 200, {'ContentType':'application/json'} 
+        else:
+            return json.dumps({'success': False}), 404, {'ContentType':'application/json'} 
 
 def update_handler(r): # TODO: Error Handling
     data = dict(r)
