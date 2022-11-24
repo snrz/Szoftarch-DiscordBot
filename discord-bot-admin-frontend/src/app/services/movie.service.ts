@@ -19,7 +19,7 @@ export class MovieService {
   }
 
   getGlobalTop100(): Observable<Movie[]>{
-    let url = this.baseUrl + `movies/query/${''}`
+    let url = this.baseUrl + 'movies/query/*'
     return this.http.get<Movie[]>(url).pipe(catchError(this.handleError))
   }
 
