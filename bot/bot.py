@@ -11,6 +11,7 @@ access_token, guild_id, imdb_file = conf_parser.parse_credentials_form_config('c
 my_intents = discord.Intents.default()
 my_intents.messages = True
 my_intents.message_content = True
+my_intents.members = True
 
 ''' Placeholder for data entry '''
 data_store = {
@@ -30,10 +31,19 @@ def set_diff_store(d : dict):
 async def save_field_value(interaction : discord.Interaction, value, field_type : str, update : bool):
     data_store[field_type] = value
     print (data_store)
+
     if all(item != None for item in data_store.values()):
-        print("Store FULL")
+        if data_store.get('title', []):
+            print(f"DEBUG: Title field set [UpdateMode: {update}]- check if user's list contains {data_store['title']}")
+            item_in_users_list = manager.get_user_movie_by_title(interaction.user.name, data_store['title'])
+            update = True if item_in_users_list else update # User has an entry of the same movie
+            if update: # Set to update instead
+                print("DEBUG: Switching to update")
+                set_diff_store(item_in_users_list)
+
+        print(f"Store FULL [UpdateMode: {update}]")
         await interaction.response.defer()
-        await interaction.followup.send("Ready to submit", view=ButtonView(update=update))
+        await interaction.followup.send("Ready to submit", view=ButtonView(initiator=interaction.user, update=update))
         return    
     await interaction.response.defer()
 
@@ -62,10 +72,17 @@ class ClientClass(commands.Bot):
 
 
 class ModularView(ui.View):
-    def __init__(self, update : bool = False):
+    def __init__(self, initiator, update : bool = False):
         super().__init__()
-        print("Modular View Init")
+        print(f"Modular View Init [owner: {initiator.name}]")
         self.update = update
+        self.initiator = initiator
+
+    def interaction_guard(self, interaction):
+        print("DEBUG: Interaction guard - OK")
+        if (interaction.user != self.initiator): # Interaction guard
+            print(f"DEBUG: Interaction guard - BLOCK - user: {interaction.user.name} owner: {self.initiator.name}")
+            interaction.response.defer()
 
     @discord.ui.select(
         options = [], # Generated at runtime
@@ -74,6 +91,10 @@ class ModularView(ui.View):
         placeholder="Select Movie Title"
     )
     async def title_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
+        # if (interaction.user != self.initiator): # Interaction guard
+        #     print(f"DEBUG: Interaction guard user: {interaction.user.name} owner: {self.initiator.name}")
+        #     interaction.response.defer()
+        self.interaction_guard(interaction)
         print (f"Title picker selection: {select.values[0]}")
         await save_field_value(interaction, select.values[0], 'title', self.update)
         #await interaction.response.defer()
@@ -91,6 +112,7 @@ class ModularView(ui.View):
         placeholder="Select Genre"
     )
     async def genre_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
+        self.interaction_guard(interaction)
         print (f"Genre picker selection: {select.values[0]}")
         await save_field_value(interaction, select.values[0], 'genre', self.update)
         #await interaction.response.defer()
@@ -108,6 +130,7 @@ class ModularView(ui.View):
         placeholder="Rate Movie"
     )
     async def rating_callback(self, interaction, select):
+        self.interaction_guard(interaction)
         print(f"Rating provided: {select.values[0]}")
         await save_field_value(interaction, select.values[0], 'rating', self.update)
         #await interaction.response.defer()
@@ -125,6 +148,7 @@ class ModularView(ui.View):
         placeholder="Suggest Age Group"
     )
     async def age_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
+        self.interaction_guard(interaction)
         print(f"Age-group: {select.values[0]}")
         await save_field_value(interaction, select.values[0], 'agegroup', self.update)
         #await interaction.response.defer()
@@ -140,21 +164,30 @@ class ModularView(ui.View):
         placeholder="Recommend Audience"
     )
     async def audience_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
+        self.interaction_guard(interaction)
         print(f"Recommended Audience: {select.values[0]}")
         await save_field_value(interaction, select.values[0], 'audience', self.update)
         #await interaction.response.defer()
 
 
 class ButtonView(ui.View):
-    def __init__(self, update : bool = False):
+    def __init__(self, initiator, update : bool = False):
         super().__init__()
         self.update = update
+        self.initiator = initiator
     
+    def interaction_guard(self, interaction):
+        print("DEBUG: Button Interaction guard - OK")
+        if (interaction.user != self.initiator): # Interaction guard
+            print(f"DEBUG: Button Interaction guard - BLOCK - user: {interaction.user.name} owner: {self.initiator.name}")
+            interaction.response.defer()
+
     @discord.ui.button(
         label="Submit",
         style=discord.ButtonStyle.blurple
     )
     async def on_submit_press(self, interaction : discord.Interaction, button):
+        self.interaction_guard(interaction)
         await interaction.response.send_message(f"Input fields ready")
         if self.update:
             await call_db_diff_update()
@@ -168,16 +201,18 @@ class ButtonView(ui.View):
         style=discord.ButtonStyle.danger
     )
     async def on_clear_press(self, interaction : discord.Interaction, button):
+        self.interaction_guard(interaction)
         for key in data_store:
             data_store[key] = None
-        await interaction.response.send_modal(MovieForm())
+        await interaction.response.send_modal(MovieForm(initiator=interaction.user))
     
 
 class MovieForm(ui.Modal, title='Questionnaire Response'):
 
-    def __init__(self):
+    def __init__(self, initiator):
         super().__init__()
         print("Modal Init")
+        self.initiator = initiator # User that owns this interaction
 
     name = ui.TextInput(label='Movie Title')
     components = [name]
@@ -189,7 +224,7 @@ class MovieForm(ui.Modal, title='Questionnaire Response'):
         filtering_routine = get_items_by_title(imdb_file, self.name)
         filtered_list = await filtering_routine
 
-        display_me = ModularView()
+        display_me = ModularView(initiator=self.initiator)
         # Generate suggestions for title select
         display_me.children[0].options=[ discord.SelectOption(label=f"{item}") for item in filtered_list ]
 
@@ -197,9 +232,9 @@ class MovieForm(ui.Modal, title='Questionnaire Response'):
         await interaction.followup.send("Select Options:", view=display_me)
 
 ### $ Query ###
-def construct_update_view(result):
+def construct_update_view(result, initiator):
     print("Construct Called")
-    update_view = ModularView(update=True)
+    update_view = ModularView(initiator=initiator, update=True)
     #print(update_view.children[0].values)
     update_view.children[0].options.append(
         discord.SelectOption(
@@ -218,6 +253,11 @@ async def send_ctx_reply(ctx, message):
     await ctx.send(message) #TODO: Refactor
 
 async def get_movies_of(ctx, user):
+    server_users = [m.name async for m in ctx.guild.fetch_members(limit=None)] # Server member validation
+    if user not in server_users:
+        await send_ctx_reply(ctx, f"User {user} is not a member of this server.")
+        return [None]
+
     result = manager.get_user_movies(user=user)
     titles = [e['title'] for e in result] # For now
     return titles
@@ -244,7 +284,10 @@ client = ClientClass()
 
 @client.tree.command(name='toggle_test', guild=discord.Object(id=guild_id))
 async def testmodal(interaction : discord.Interaction):
-    await interaction.response.send_modal(MovieForm())
+    if manager.get_user_item_count(user=interaction.user.name) == 10: # TODO: Align with frontend (MOVEME)
+        await interaction.response.send_message("Your list is already populated, delete something before uploading")
+    else:
+        await interaction.response.send_modal(MovieForm(initiator=interaction.user))
 
 @client.command()
 async def update_movie(ctx : commands.Context, args):
@@ -258,16 +301,22 @@ async def update_movie(ctx : commands.Context, args):
     
     # Clear data_store, except title
     data_store['title'] = result['title']
-    await ctx.send("Update", view=construct_update_view(result))
+    await ctx.send("Update", view=construct_update_view(result, ctx.author))
 
 @client.command()
 async def my_movies(ctx : commands.Context):
-    await get_movies_of(ctx, ctx.author.name)
+    r = await get_movies_of(ctx, ctx.author.name)
+    await send_ctx_reply(ctx, '\n'.join(r))
 
 @client.command()
 async def movies_of(ctx : commands.Context, args):
     r = await get_movies_of(ctx, args)
-    await send_ctx_reply(ctx, '\n'.join(r))
+    if None in r: 
+        await ctx.defer() # Response sent out in handler
+    elif r == []: 
+        await send_ctx_reply(ctx, "User has no movies yet.")
+    else:
+        await send_ctx_reply(ctx, '\n'.join(r))
 
 @client.command()
 async def delete_my_movie(ctx : commands.Context, args):

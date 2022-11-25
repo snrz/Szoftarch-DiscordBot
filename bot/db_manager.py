@@ -112,5 +112,8 @@ class DBManager():
     def get_user_movies(self, user):
         return [item for item in self.collection.find({"user": f"{user}"}, {'_id': False})]
     
+    def get_user_item_count(self, user):
+        return self.collection.count_documents({'user': f'{user}'})
+    
     def user_lookup(self, user_obj : dict, collection : str = 'bot_admin'):
         return self.db[collection].find_one(user_obj)
