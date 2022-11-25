@@ -40,16 +40,17 @@ export class DashboardComponent implements OnInit {
   displayedColumnsTop10: string[] = ['Title', 'Rating', 'Audience', 'Genre', 'Age', 'Actions']
   titles_config: any
   filter: string = ""
+  queryResult: Movie[]
 
   constructor(private dataService: DataService, private movieService: MovieService,private router: Router, private http: HttpClient, public dialog: MatDialog) { }
 
   ngOnInit(): void {
-    if(!this.dataService.is_user_logged_in){
+    if(!JSON.parse(sessionStorage.getItem("is_logged_in"))){
         this.router.navigate([''])
     }
     this.titles_config = titles_config_file
     this.dataService.movie_titles = this.titles_config.titles
-    this.movieService.getMoviesOfUser(this.dataService.user_logged_in).subscribe((res) => this.userTop10 = res)
+    this.movieService.getMoviesOfUser(JSON.parse(sessionStorage.getItem("user"))).subscribe((res) => this.userTop10 = res)
     this.movieService.getGlobalTop100().subscribe((res) => this.globalTop100 = res)
   }
 
@@ -103,7 +104,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  execute(){
+  execute(query: string){
+    this.movieService.getMoviesByQuery(query).subscribe((resp) => {
+      this.queryResult = resp
+    },
+    (error: HttpErrorResponse) => {
+      window.alert("Could not execute query.")
+    })
 
   }
 

@@ -109,12 +109,12 @@
   </div>
 
   <div class="function-area">
-    <textarea matInput disabled class="output-field"></textarea>
+    <textarea matInput disabled class="output-field" [ngModel]="queryResult"></textarea>
     <mat-card>
       <mat-card-content class="bottom-bar">
-        <input matInput class="command-input" />
+        <input matInput class="command-input" #queryInput/>
         <div class="button-box">
-          <button mat-raised-button color="primary" (click)="execute()">
+          <button mat-raised-button color="primary" (click)="execute(queryInput.value)">
             Execute
           </button>
           <button mat-raised-button color="accent" (click)="upload()">

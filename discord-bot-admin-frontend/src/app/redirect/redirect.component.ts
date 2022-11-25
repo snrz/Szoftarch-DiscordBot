@@ -10,21 +10,22 @@ import { DataService } from '../services/data.service';
 })
 export class RedirectComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private dataService: DataService, private http: HttpClient, private router: Router) { }
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
     this.route.fragment.subscribe(fragment => {
       let parsedhash = new URLSearchParams(fragment)
       let access_token = parsedhash.get("access_token")
-      this.dataService.access_token = access_token
+      sessionStorage.setItem("access_token", JSON.stringify(access_token))
       let tokenType = parsedhash.get("token_type")
       this.http.get('https://discord.com/api/users/@me', {
         headers: {
           authorization: `${tokenType} ${access_token}`,
         },
       }).subscribe(res => {
-        this.dataService.user_logged_in = Object.values(res)[1],
-        this.dataService.is_user_logged_in = true,
+        sessionStorage.setItem("user", JSON.stringify(Object.values(res)[1])),
+        sessionStorage.setItem("is_logged_in", JSON.stringify(true)),
+        sessionStorage.setItem("is_admin", JSON.stringify(false))
         this.router.navigate(['/dashboard'])
       })
     });

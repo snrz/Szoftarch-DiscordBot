@@ -19,7 +19,7 @@ export class AdminLoginPageComponent implements OnInit {
   password = new FormControl('', [Validators.required]);
   admin_conf: any
   
-  constructor(private http: HttpClient, private auth: AuthService, private dataService: DataService, private router: Router) { }
+  constructor(private http: HttpClient, private auth: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.admin_conf = admin_config
@@ -36,8 +36,9 @@ export class AdminLoginPageComponent implements OnInit {
 
     this.auth.loginAdmin(user_cred).subscribe((resp) => {
       if(resp.status == 200){
-        this.dataService.user_logged_in = this.username.value
-        this.dataService.is_user_logged_in = true
+        sessionStorage.setItem("user", JSON.stringify(this.username.value))
+        sessionStorage.setItem("is_logged_in", JSON.stringify(true))
+        sessionStorage.setItem("is_admin", JSON.stringify(true))
         this.router.navigate(['/dashboard'])
       }
     },

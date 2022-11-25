@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginPageComponent } from './login-page/login-page.component';
 import { RouterModule } from '@angular/router';
 import { AdminLoginPageComponent } from './admin-login-page/admin-login-page.component';
 import { MainToolbarComponent } from './main-toolbar/main-toolbar.component';
@@ -15,11 +14,11 @@ import { RedirectComponent } from './redirect/redirect.component';
 import { HttpClientModule } from '@angular/common/http';
 import { UpdateComponent } from './update/update.component';
 import { UploadComponent } from './upload/upload.component';
+import { AdminListUsersComponent } from './admin-list-users/admin-list-users.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginPageComponent,
     AdminLoginPageComponent,
     MainToolbarComponent,
     HomePageComponent,
@@ -27,7 +26,8 @@ import { UploadComponent } from './upload/upload.component';
     RedirectComponent,
     UpdateComponent,
     UploadComponent,
-    FilterDialog
+    FilterDialog,
+    AdminListUsersComponent
   ],
   imports: [
     BrowserModule,
@@ -35,7 +35,6 @@ import { UploadComponent } from './upload/upload.component';
     RouterModule.forRoot(
       [
         {path: '', component: HomePageComponent},
-        {path: 'login', component: LoginPageComponent},
         {path: 'admin-login', component: AdminLoginPageComponent},
         {path: 'dashboard', component: DashboardComponent},
         {path: 'redirect', component: RedirectComponent},

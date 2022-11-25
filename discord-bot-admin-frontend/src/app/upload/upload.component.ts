@@ -14,7 +14,7 @@ export class UploadComponent implements OnInit {
 
   constructor(private dataService: DataService, private movieService: MovieService, private router: Router) { }
 
-  movie: Movie = {title: "", rating: "", genre: "", agegroup: "", audience: "", user: this.dataService.user_logged_in}
+  movie: Movie = {title: "", rating: "", genre: "", agegroup: "", audience: "", user: JSON.parse(sessionStorage.getItem("user"))}
   titles: string[]
 
   ngOnInit(): void {
