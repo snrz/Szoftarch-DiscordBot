@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
   displayedColumnsTop100: string[] =  ['Title', 'Rating', 'Audience', 'Genre', 'Age']
   displayedColumnsTop10: string[] = ['Title', 'Rating', 'Audience', 'Genre', 'Age', 'Actions']
   titles_config: any
-  filter: string = ""
+  filter: string
   queryResult: Movie[]
   username: string
 
@@ -95,10 +95,14 @@ export class DashboardComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         console.log('The dialog was closed');
         this.filter = result;
-        let regex = RegExp(`[^\"]*${this.filter}[^\"]*`)
-        let filtered_title_list = this.dataService.movie_titles.filter(title => title.match(regex))
-        this.dataService.filtered_titles = filtered_title_list.slice(0, 25)
-        this.router.navigate(['/upload'])
+        if(this.filter){
+          let regex = RegExp(`[^\"]*${this.filter}[^\"]*`)
+          let filtered_title_list = this.dataService.movie_titles.filter(title => title.match(regex))
+          let unique_filtered_title_list = [... new Set(filtered_title_list)]
+          this.dataService.filtered_titles = unique_filtered_title_list.slice(0, 25)
+          this.router.navigate(['/upload'])
+        }
+        
       })
     }
     
