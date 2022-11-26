@@ -78,11 +78,13 @@ class ModularView(ui.View):
         self.update = update
         self.initiator = initiator
 
-    def interaction_guard(self, interaction):
-        print("DEBUG: Interaction guard - OK")
+    async def interaction_guard(self, interaction : discord.Interaction):
         if (interaction.user != self.initiator): # Interaction guard
             print(f"DEBUG: Interaction guard - BLOCK - user: {interaction.user.name} owner: {self.initiator.name}")
-            interaction.response.defer()
+            await interaction.response.send_message("You are not the owner of this interaction, wait for your turn.", ephemeral=True)
+            return True
+        print("DEBUG: Interaction guard - OK")
+        return False
 
     @discord.ui.select(
         options = [], # Generated at runtime
@@ -91,12 +93,9 @@ class ModularView(ui.View):
         placeholder="Select Movie Title"
     )
     async def title_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
-        # if (interaction.user != self.initiator): # Interaction guard
-        #     print(f"DEBUG: Interaction guard user: {interaction.user.name} owner: {self.initiator.name}")
-        #     interaction.response.defer()
-        self.interaction_guard(interaction)
-        print (f"Title picker selection: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'title', self.update)
+        if not await self.interaction_guard(interaction):
+            print (f"Title picker selection: {select.values[0]}")
+            await save_field_value(interaction, select.values[0], 'title', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -112,9 +111,9 @@ class ModularView(ui.View):
         placeholder="Select Genre"
     )
     async def genre_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
-        self.interaction_guard(interaction)
-        print (f"Genre picker selection: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'genre', self.update)
+        if not await self.interaction_guard(interaction):
+            print (f"Genre picker selection: {select.values[0]}")
+            await save_field_value(interaction, select.values[0], 'genre', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -130,9 +129,9 @@ class ModularView(ui.View):
         placeholder="Rate Movie"
     )
     async def rating_callback(self, interaction, select):
-        self.interaction_guard(interaction)
-        print(f"Rating provided: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'rating', self.update)
+        if not await self.interaction_guard(interaction):
+            print(f"Rating provided: {select.values[0]}")
+            await save_field_value(interaction, select.values[0], 'rating', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -148,9 +147,9 @@ class ModularView(ui.View):
         placeholder="Suggest Age Group"
     )
     async def age_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
-        self.interaction_guard(interaction)
-        print(f"Age-group: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'agegroup', self.update)
+        if not await self.interaction_guard(interaction):
+            print(f"Age-group: {select.values[0]}")
+            await save_field_value(interaction, select.values[0], 'agegroup', self.update)
         #await interaction.response.defer()
 
     @discord.ui.select(
@@ -164,9 +163,9 @@ class ModularView(ui.View):
         placeholder="Recommend Audience"
     )
     async def audience_callback(self, interaction : discord.Interaction, select : discord.ui.Select):
-        self.interaction_guard(interaction)
-        print(f"Recommended Audience: {select.values[0]}")
-        await save_field_value(interaction, select.values[0], 'audience', self.update)
+        if not await self.interaction_guard(interaction):
+            print(f"Recommended Audience: {select.values[0]}")
+            await save_field_value(interaction, select.values[0], 'audience', self.update)
         #await interaction.response.defer()
 
 
@@ -176,35 +175,37 @@ class ButtonView(ui.View):
         self.update = update
         self.initiator = initiator
     
-    def interaction_guard(self, interaction):
-        print("DEBUG: Button Interaction guard - OK")
+    async def interaction_guard(self, interaction):
         if (interaction.user != self.initiator): # Interaction guard
             print(f"DEBUG: Button Interaction guard - BLOCK - user: {interaction.user.name} owner: {self.initiator.name}")
-            interaction.response.defer()
+            await interaction.response.send_message("You are not the owner of this interaction, wait for your turn.", ephemeral=True)
+            return True
+        print("DEBUG: Button Interaction guard - OK")
+        return False
 
     @discord.ui.button(
         label="Submit",
         style=discord.ButtonStyle.blurple
     )
     async def on_submit_press(self, interaction : discord.Interaction, button):
-        self.interaction_guard(interaction)
-        await interaction.response.send_message(f"Input fields ready")
-        if self.update:
-            await call_db_diff_update()
-        else:
-            manager.write_obj_to_collection({**data_store, **{'user': f"{interaction.user.name}"}})
-        for key in data_store:
-            data_store[key] = None
+        if not await self.interaction_guard(interaction):
+            await interaction.response.send_message(f"Input fields ready")
+            if self.update:
+                await call_db_diff_update()
+            else:
+                manager.write_obj_to_collection({**data_store, **{'user': f"{interaction.user.name}"}})
+            for key in data_store:
+                data_store[key] = None
 
     @discord.ui.button(
         label="Clear",
         style=discord.ButtonStyle.danger
     )
     async def on_clear_press(self, interaction : discord.Interaction, button):
-        self.interaction_guard(interaction)
-        for key in data_store:
-            data_store[key] = None
-        await interaction.response.send_modal(MovieForm(initiator=interaction.user))
+        if not await self.interaction_guard(interaction):
+            for key in data_store:
+                data_store[key] = None
+            await interaction.response.send_modal(MovieForm(initiator=interaction.user))
     
 
 class MovieForm(ui.Modal, title='Questionnaire Response'):
