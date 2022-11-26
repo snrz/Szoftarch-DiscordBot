@@ -33,6 +33,11 @@ export class MovieService {
       return this.http.get<Movie[]>(url).pipe(catchError(this.handleError))
   }
 
+  getAllUsers(): Observable<string[]> {
+    let url = this.baseUrl + 'users'
+    return this.http.get<string[]>(url).pipe(catchError(this.handleError))
+  }
+
   deleteUserMovie(body: any): Observable<any>{
     let url = this.baseUrl + `delete`
     return this.http.post<any>(url, body)

@@ -1,7 +1,7 @@
 <div class="layout-parent">
   <header class="dashboard-header">
     <p>
-      USERNAME
+      {{username}}
       <mat-icon>discord</mat-icon>
     </p>
   </header>
@@ -109,7 +109,7 @@
   </div>
 
   <div class="function-area">
-    <textarea matInput disabled class="output-field" [ngModel]="queryResult"></textarea>
+    <textarea id="queryResultTextArea" matInput disabled class="output-field"></textarea>
     <mat-card>
       <mat-card-content class="bottom-bar">
         <input matInput class="command-input" #queryInput/>

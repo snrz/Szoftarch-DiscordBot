@@ -1,6 +1,8 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
        <span>Discord bot</span>
-       <a mat-raised-button routerLink="/dashboard">Dashboard</a>
+       <a mat-flat-button class="dashboard_buttons" color="primary" routerLink="/dashboard" *ngIf="is_logged_in">Dashboard</a>
+       <a mat-flat-button class="dashboard_buttons" color="primary" routerLink="/users" *ngIf="is_logged_in">Users</a>
+       <button mat-flat-button class="dashboard_buttons" color="primary" (click)="logout()" *ngIf="is_logged_in">Logout</button>
     </mat-toolbar-row>
 </mat-toolbar>

@@ -117,3 +117,6 @@ class DBManager():
     
     def user_lookup(self, user_obj : dict, collection : str = 'bot_admin'):
         return self.db[collection].find_one(user_obj)
+
+    def get_all_user(self):
+        return self.collection.find({}, {'user': 1, '_id': False}).distinct('user')

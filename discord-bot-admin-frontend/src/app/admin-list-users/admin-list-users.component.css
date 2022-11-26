@@ -1,0 +1,16 @@
+.card-holder {
+    display: inline-flex;
+    grid-area: cards;
+    justify-content: space-evenly;
+  }
+  
+  .data-card {
+    height: 500px;
+    width: 45%;
+    overflow: auto;
+  }
+  
+  .mat-elevation-z8 {
+    width: 100%;
+    padding-top: 0%;
+  }

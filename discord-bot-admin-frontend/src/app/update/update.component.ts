@@ -18,6 +18,9 @@ export class UpdateComponent implements OnInit {
   constructor(private dataService: DataService, private http: HttpClient, private movieService: MovieService, private router: Router) { }
 
   ngOnInit(): void {
+    if(!JSON.parse(sessionStorage.getItem("is_logged_in"))){
+      this.router.navigate([''])
+    }
     this.movieToEdit = this.dataService.movie_to_edit
     this.titles = this.dataService.filtered_titles
     console.log(this.movieToEdit)

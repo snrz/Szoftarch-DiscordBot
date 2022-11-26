@@ -100,3 +100,7 @@ def update_user_movie():
 @app.post("/upload")
 def upload_user_movie():
     return upload_handler(request.json)
+
+@app.get("/users")
+def get_all_user():
+    return manager.get_all_user()

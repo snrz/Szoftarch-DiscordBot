@@ -1,0 +1,94 @@
+<div>
+    <mat-card class="data-card">
+        <table mat-table [dataSource]="userTop10" class="mat-elevation-z8" *ngIf="!is_admin">
+          <!--- Note that these columns can be defined in any order.
+                          The actual rendered columns are set as a property on the row definition" -->
+    
+          <!-- Position Column -->
+          <ng-container matColumnDef="Title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+          </ng-container>
+    
+          <!-- Name Column -->
+          <ng-container matColumnDef="Rating">
+            <th mat-header-cell *matHeaderCellDef>Rating</th>
+            <td mat-cell *matCellDef="let element">{{ element.rating }}</td>
+          </ng-container>
+    
+          <!-- Weight Column -->
+          <ng-container matColumnDef="Audience">
+            <th mat-header-cell *matHeaderCellDef>Audience</th>
+            <td mat-cell *matCellDef="let element">{{ element.audience }}</td>
+          </ng-container>
+    
+          <ng-container matColumnDef="Genre">
+            <th mat-header-cell *matHeaderCellDef>Genre</th>
+            <td mat-cell *matCellDef="let element">{{ element.genre }}</td>
+          </ng-container>
+    
+          <!-- Symbol Column -->
+          <ng-container matColumnDef="Age">
+            <th mat-header-cell *matHeaderCellDef> Age </th>
+            <td mat-cell *matCellDef="let element"> {{element.agegroup}} </td>
+          </ng-container>
+    
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsTop10"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsTop10"></tr>
+        </table>
+      </mat-card>
+
+
+      <mat-card class="data-card">
+        <table mat-table [dataSource]="userTop10" class="mat-elevation-z8" *ngIf="is_admin">
+          <!--- Note that these columns can be defined in any order.
+                          The actual rendered columns are set as a property on the row definition" -->
+  
+          <!-- Position Column -->
+          <ng-container matColumnDef="Title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+          </ng-container>
+  
+          <!-- Name Column -->
+          <ng-container matColumnDef="Rating">
+            <th mat-header-cell *matHeaderCellDef>Rating</th>
+            <td mat-cell *matCellDef="let element">{{ element.rating }}</td>
+          </ng-container>
+  
+          <!-- Weight Column -->
+          <ng-container matColumnDef="Audience">
+            <th mat-header-cell *matHeaderCellDef>Audience</th>
+            <td mat-cell *matCellDef="let element">{{ element.audience }}</td>
+          </ng-container>
+  
+          <ng-container matColumnDef="Genre">
+            <th mat-header-cell *matHeaderCellDef>Genre</th>
+            <td mat-cell *matCellDef="let element">{{ element.genre }}</td>
+          </ng-container>
+  
+          <!-- Symbol Column -->
+          <ng-container matColumnDef="Age">
+            <th mat-header-cell *matHeaderCellDef> Age </th>
+            <td mat-cell *matCellDef="let element"> {{element.agegroup}} </td>
+          </ng-container>
+  
+          <ng-container matColumnDef="Actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button
+                mat-raised-button
+                color="warn"
+                (click)="delete(element)"
+                style="margin-right: 20px;"
+              >
+                Delete
+              </button>
+            </td>
+          </ng-container>
+  
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsTop10_admin"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsTop10_admin"></tr>
+        </table>
+      </mat-card>
+</div>

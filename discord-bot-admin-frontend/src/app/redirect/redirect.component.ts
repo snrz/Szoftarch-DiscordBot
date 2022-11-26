@@ -26,6 +26,7 @@ export class RedirectComponent implements OnInit {
         sessionStorage.setItem("user", JSON.stringify(Object.values(res)[1])),
         sessionStorage.setItem("is_logged_in", JSON.stringify(true)),
         sessionStorage.setItem("is_admin", JSON.stringify(false))
+        sessionStorage.setItem("refreshed", JSON.stringify(false))
         this.router.navigate(['/dashboard'])
       })
     });

@@ -18,6 +18,9 @@ export class UploadComponent implements OnInit {
   titles: string[]
 
   ngOnInit(): void {
+    if(!JSON.parse(sessionStorage.getItem("is_logged_in"))){
+      this.router.navigate([''])
+    }
     this.titles = this.dataService.filtered_titles
   }
 
@@ -26,7 +29,10 @@ export class UploadComponent implements OnInit {
       this.router.navigate(['/dashboard'])
     },(error: HttpErrorResponse) => {
       if(error.status == 404){
-        window.alert('Something bad happened, could not upload movie')
+        window.alert('Movie already uploaded.')
+      }
+      if(error.status == 400){
+        window.alert('You have to select a value in every field.')
       }
     })
   }

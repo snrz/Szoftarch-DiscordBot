@@ -15,6 +15,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { UpdateComponent } from './update/update.component';
 import { UploadComponent } from './upload/upload.component';
 import { AdminListUsersComponent } from './admin-list-users/admin-list-users.component';
+import { UserMoviesComponent } from './user-movies/user-movies.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { AdminListUsersComponent } from './admin-list-users/admin-list-users.com
     UpdateComponent,
     UploadComponent,
     FilterDialog,
-    AdminListUsersComponent
+    AdminListUsersComponent,
+    UserMoviesComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +41,9 @@ import { AdminListUsersComponent } from './admin-list-users/admin-list-users.com
         {path: 'dashboard', component: DashboardComponent},
         {path: 'redirect', component: RedirectComponent},
         {path: 'update', component: UpdateComponent},
-        {path: 'upload', component: UploadComponent}
+        {path: 'upload', component: UploadComponent},
+        {path: 'users', component: AdminListUsersComponent},
+        {path: 'movies_of', component: UserMoviesComponent}
       ]
     ),
     NoopAnimationsModule,
