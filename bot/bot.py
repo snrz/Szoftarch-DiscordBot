@@ -294,10 +294,10 @@ async def update_movie(ctx : commands.Context, args):
     ''' Update movie from users previous updates (search by title) '''
     print(args) # TODO: Validation
     result = manager.get_user_movie_by_title(ctx.author.name, args)
-    set_diff_store(result)
     if not result:
-        ctx.send("Couldn't find your movie. Upload it first.")
+        await ctx.send("Couldn't find your movie. Upload it first.")
         return
+    set_diff_store(result)
     
     # Clear data_store, except title
     data_store['title'] = result['title']
