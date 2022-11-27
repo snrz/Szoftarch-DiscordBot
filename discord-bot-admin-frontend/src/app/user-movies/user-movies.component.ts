@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Movie } from '../models/movie';
+import { DataService } from '../services/data.service';
 import { MovieService } from '../services/movie.service';
 
 @Component({
@@ -16,7 +17,7 @@ export class UserMoviesComponent implements OnInit {
   is_admin: boolean
   displayedColumnsTop10_admin = ['Title', 'Rating', 'Audience', 'Genre', 'Age', 'Actions']
 
-  constructor(private movieService: MovieService, private router: Router) { }
+  constructor(private movieService: MovieService, private router: Router, private dataService: DataService) { }
 
   ngOnInit(): void {
     if(!JSON.parse(sessionStorage.getItem("is_logged_in"))){
@@ -42,6 +43,11 @@ export class UserMoviesComponent implements OnInit {
         window.alert("Could not delete movie.")
       }
     })
+  }
+
+  edit(movie: Movie){
+    this.dataService.movie_to_edit = movie
+    this.router.navigate(['/update'])
   }
 
 }
