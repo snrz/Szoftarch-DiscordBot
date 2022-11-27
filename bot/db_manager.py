@@ -1,6 +1,7 @@
 from pymongo import MongoClient, errors
 import libraries.conf_parser as conf_parser
 
+from events import Events
 
 class DBManager():
 
@@ -18,6 +19,10 @@ class DBManager():
 
         self.verify_db()
         self.verify_collection()
+
+        self.__events = Events('on_blocklist_changed')
+        self.on_blocklist_changed = self.__events.on_blocklist_changed
+
         print("[DBManager]: Ready")
 
     def create_filter_from_query(self, query):
@@ -136,3 +141,25 @@ class DBManager():
 
     def get_all_user(self):
         return self.collection.find({}, {'user': 1, '_id': False}).distinct('user')
+
+    def blocklist_add_user(self, user, collection : str = 'blocklist'):
+        old = [user['name'] for user in self.blocklist_get_current()]
+        print(f"{user} IN {old}")
+        if user['name'] not in old:
+            self.db[collection].insert_one(user)
+            current = [user['name'] for user in self.blocklist_get_current()]
+            self.on_blocklist_changed(current)
+        else:
+            print("@DBManager: Interaction BLOCK operation blocklisting")
+    
+    def blocklist_del_user(self, user, collection : str = 'blocklist'):
+        old = [user['name'] for user in self.blocklist_get_current()]
+        if user['name'] in old:
+            self.db[collection].delete_one(user)
+            current = [user['name'] for user in self.blocklist_get_current()]
+            self.on_blocklist_changed(current)
+        else:
+            print("@DBManager: Interaction BLOCK operation unblocking")
+    
+    def blocklist_get_current(self):
+        return self.db['blocklist'].find({}, {'_id': False})

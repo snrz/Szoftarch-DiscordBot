@@ -13,6 +13,18 @@ my_intents.messages = True
 my_intents.message_content = True
 my_intents.members = True
 
+''' Blocklist change handler '''
+BOT_ACCESS_BLOCKED = []
+def handle_blocklist_change(current_state : list):
+    global BOT_ACCESS_BLOCKED
+    print(f"Change triggered, got: {current_state}")
+    BOT_ACCESS_BLOCKED = [user for user in current_state]
+
+ENABLE_INTERACTION_GUARD = True
+def blocklist_interaction_gurad(user, enabled = ENABLE_INTERACTION_GUARD):
+    print(f"DEBUG: Users on blocklist {BOT_ACCESS_BLOCKED}")
+    return True if user in BOT_ACCESS_BLOCKED else False
+
 ''' Placeholder for data entry '''
 data_store = {
     'title':    None,
@@ -289,6 +301,9 @@ client = ClientClass()
 
 @client.tree.command(name='toggle_test', guild=discord.Object(id=guild_id))
 async def testmodal(interaction : discord.Interaction):
+    if blocklist_interaction_gurad(interaction.user.name): # Guard
+        await interaction.response.send_message("You have been blocked by an admin")
+        return
     if manager.get_user_item_count(user=interaction.user.name) == 10: # TODO: Align with frontend (MOVEME)
         await interaction.response.send_message("Your list is already populated, delete something before uploading")
     else:
@@ -297,6 +312,9 @@ async def testmodal(interaction : discord.Interaction):
 @client.command()
 async def update_movie(ctx : commands.Context, args):
     ''' Update movie from users previous updates (search by title) '''
+    if blocklist_interaction_gurad(ctx.author.name): # Guard
+        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        return
     print(args) # TODO: Validation
     result = manager.get_user_movie_by_title(ctx.author.name, args)
     if not result:
@@ -310,11 +328,17 @@ async def update_movie(ctx : commands.Context, args):
 
 @client.command()
 async def my_movies(ctx : commands.Context):
+    if blocklist_interaction_gurad(ctx.author.name): # Guard
+        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        return
     r = await get_movies_of(ctx, ctx.author.name)
     await send_ctx_reply(ctx, '\n'.join(r))
 
 @client.command()
 async def movies_of(ctx : commands.Context, args):
+    if blocklist_interaction_gurad(ctx.author.name): # Guard
+        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        return
     r = await get_movies_of(ctx, args)
     if None in r: 
         await ctx.defer() # Response sent out in handler
@@ -325,15 +349,24 @@ async def movies_of(ctx : commands.Context, args):
 
 @client.command()
 async def delete_my_movie(ctx : commands.Context, args):
+    if blocklist_interaction_gurad(ctx.author.name): # Guard
+        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        return
     await delete_movie_of(ctx, ctx.author.name, args)
 
 @client.command()
 async def delete_my_movies(ctx : commands.Context):
+    if blocklist_interaction_gurad(ctx.author.name): # Guard
+        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        return
     await delete_movies_of(ctx.author.name)
     await send_ctx_reply(ctx, "Movie list deleted.")
 
 @client.command()
 async def spec_movies(ctx : commands.Context, args):
+    if blocklist_interaction_gurad(ctx.author.name): # Guard
+        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        return
     await get_movies_by_query(ctx, args)
 
 @client.command()
@@ -343,5 +376,7 @@ async def hello(ctx : commands.Context):
 
 if __name__ == '__main__':
     manager = db_manager.DBManager()
+    BOT_ACCESS_BLOCKED = [user['name'] for user in manager.blocklist_get_current()]
+    manager.on_blocklist_changed += handle_blocklist_change
     client.run(access_token)
 

@@ -104,3 +104,15 @@ def upload_user_movie():
 @app.get("/users")
 def get_all_user():
     return manager.get_all_user()
+
+@app.get("/blocklist/get")
+def get_blocked_users():
+    return manager.blocklist_get_current() # Iterator
+
+@app.post("/blocklist/add")
+def get_blocked_users():
+    return manager.blocklist_add_user(dict(request.json)['user'])
+
+@app.post("/blocklist/delete")
+def get_blocked_users():
+    return manager.blocklist_del_current(dict(request.json)['user'])
