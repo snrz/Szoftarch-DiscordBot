@@ -17,7 +17,7 @@ export class FilterDialog {
   
   constructor(
     public dialogRef: MatDialogRef<FilterDialog>,
-    @Inject(MAT_DIALOG_DATA) public filter: string,
+    @Inject(MAT_DIALOG_DATA) public filter: any,
   ) {}
 
   onNoClick(): void {
@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
   displayedColumnsTop100: string[] =  ['Title', 'Rating', 'Audience', 'Genre', 'Age']
   displayedColumnsTop10: string[] = ['Title', 'Rating', 'Audience', 'Genre', 'Age', 'Actions']
   titles_config: any
-  filter: string
+  filter: any
   queryResult: Movie[]
   username: string
 
