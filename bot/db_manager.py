@@ -27,7 +27,7 @@ class DBManager():
         for item in params:
             item = item[1:] if ' ' in item[0] else item
             item_spl = item.split(' ') # p, v
-
+            
             if 'u' in item_spl:
                 f['user'] = item_spl[1]
             if 't' in item_spl:
@@ -92,19 +92,22 @@ class DBManager():
             { "user": f"{user}" }
         )
 
-    def get_user_movies_by_query(self, query):
+    def get_user_movies_by_query(self, query): # Error handling ???
         search_filter = self.create_filter_from_query(query)
         if not search_filter.get('user', []):
             try:
                 db_iter = self.collection.find(search_filter, {'_id': False}).sort('rating', -1).limit(100)
-            except errors.OperationFailure:
+                return self.format_response(db_iter)
+            except errors.OperationFailure as e:
+                print(f'OPERATION FAILURE CAUGHT: {e}')
                 return ['']
-            return self.format_response(db_iter)
         try:
-            db_iter =  self.collection.find(search_filter, {'_id': False}) # TODO Refactor TopMovies logic
-        except errors.OperationFailure:
+            print('magic')
+            db_iter = self.collection.find(search_filter, {'_id': False}) # TODO Refactor TopMovies logic
+            return self.format_response(db_iter)
+        except errors.OperationFailure as e:
+            print(f'OPERATION FAILURE CAUGHT: {e}')
             return ['']
-        return self.format_response(db_iter)
 
     def test_query(self):
         return [i for i in self.collection.find({'user': 'test', 'rating': {'$gte': '4'}})]

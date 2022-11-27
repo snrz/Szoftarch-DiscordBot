@@ -280,6 +280,7 @@ async def get_movies_by_query(ctx, query):
     print(r)
     if '' in r:
         await send_ctx_reply(ctx, "Invalid query.")
+        return
     rs = '\n'.join(r)
     print(rs)
     await send_ctx_reply(ctx, f"Result: \n{rs}")
