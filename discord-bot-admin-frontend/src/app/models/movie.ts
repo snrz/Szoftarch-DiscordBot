@@ -1,8 +1,8 @@
 export interface Movie{
-    title: any,
-    genre: any,
-    rating: any,
-    agegroup: any,
-    audience: any,
-    user: any
+    title: string,
+    genre: string,
+    rating: string,
+    agegroup: string,
+    audience: string,
+    user: string
 }
