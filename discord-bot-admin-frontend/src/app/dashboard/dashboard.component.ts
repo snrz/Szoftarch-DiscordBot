@@ -56,7 +56,10 @@ export class DashboardComponent implements OnInit {
     this.titles_config = titles_config_file
     this.dataService.movie_titles = this.titles_config.titles
     this.movieService.getMoviesOfUser(JSON.parse(sessionStorage.getItem("user"))).subscribe((res) => this.userTop10 = res)
-    this.movieService.getGlobalTop100().subscribe((res) => this.globalTop100 = res)
+    this.movieService.getGlobalTop100().subscribe((res) => {
+        this.globalTop100 = res
+      }
+    )
     this.movieService.getAllUsers().subscribe((res) => sessionStorage.setItem('users', JSON.stringify(res)))
     
   }
@@ -74,6 +77,7 @@ export class DashboardComponent implements OnInit {
         if(item === movie) newTop10.splice(index,1);
       });
       this.userTop10 = newTop10
+      this.movieService.getGlobalTop100().subscribe((res) => this.globalTop100 = res)
     },
     (error: HttpErrorResponse) => {
       if(error.status == 404){
@@ -94,7 +98,7 @@ export class DashboardComponent implements OnInit {
   
       dialogRef.afterClosed().subscribe(result => {
         console.log('The dialog was closed');
-        this.filter = result;
+        this.filter = result.filter;
         if(this.filter){
           let regex = RegExp(`[^\"]*${this.filter}[^\"]*`)
           let filtered_title_list = this.dataService.movie_titles.filter(title => title.match(regex))
@@ -109,15 +113,30 @@ export class DashboardComponent implements OnInit {
   }
 
   execute(query: string){
-    this.movieService.getMoviesByQuery(query).subscribe((resp) => {
-      this.queryResult = resp
-      console.log(this.queryResult)
-      let textarea = <HTMLInputElement>document.getElementById("queryResultTextArea")
-      textarea.value = JSON.stringify(this.queryResult)
-    },
-    (error: HttpErrorResponse) => {
-      window.alert("Could not execute query.")
-    })
+    let command = query.substring(0, query.indexOf(' '))
+    if(command != "$spec_movies"){
+      window.alert("Invalid command")
+    }
+    else{
+      let queryString = query.substring(query.indexOf(' ') + 1)
+      console.log(command)
+      console.log(queryString)
+      this.movieService.getMoviesByQuery(queryString).subscribe((resp) => {
+        this.queryResult = resp
+        if(JSON.stringify(this.queryResult) == '[""]'){
+          window.alert("Invalid query")
+        }
+        else{
+          let textarea = <HTMLInputElement>document.getElementById("queryResultTextArea")
+          textarea.value = JSON.stringify(this.queryResult)
+        }
+        
+      },
+        (error: HttpErrorResponse) => {
+          window.alert("Could not execute query.")
+        })
+    }
+    
 
   }
 

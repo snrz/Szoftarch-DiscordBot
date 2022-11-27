@@ -97,6 +97,8 @@ class DBManager():
         if not search_filter.get('user', []):
             try:
                 db_iter = self.collection.find(search_filter, {'_id': False}).sort('rating', -1).limit(100)
+                if query == '*':
+                    return db_iter
                 return self.format_response(db_iter)
             except errors.OperationFailure as e:
                 print(f'OPERATION FAILURE CAUGHT: {e}')
