@@ -276,9 +276,12 @@ async def delete_movies_of(user):
     manager.delete_user_movies(user)
     
 async def get_movies_by_query(ctx, query):
-    r = manager.get_user_movies_by_query(query)
+    r = manager.get_user_movies_by_query(query) # [<str>]
     print(r)
+    if '' in r:
+        await send_ctx_reply(ctx, "Invalid query.")
     rs = '\n'.join(r)
+    print(rs)
     await send_ctx_reply(ctx, f"Result: \n{rs}")
 
 client = ClientClass()

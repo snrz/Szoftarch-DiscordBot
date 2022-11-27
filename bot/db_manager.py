@@ -44,6 +44,9 @@ class DBManager():
         print(f)
         return f
 
+    def format_response(self, iterator):
+        return [item.__str__() for item in iterator]
+
     def verify_db(self, db_name : str = 'bot'):
         if db_name not in self.client.list_database_names():
             print(f"[DBManager]: Initializing {db_name} database ..")
@@ -92,9 +95,17 @@ class DBManager():
     def get_user_movies_by_query(self, query):
         search_filter = self.create_filter_from_query(query)
         if not search_filter.get('user', []):
-            return self.collection.find(search_filter, {'_id': False}).sort('rating', -1).limit(100)
-        return self.collection.find(search_filter, {'_id': False}) # TODO Refactor TopMovies logic
-    
+            try:
+                db_iter = self.collection.find(search_filter, {'_id': False}).sort('rating', -1).limit(100)
+            except errors.OperationFailure:
+                return ['']
+            return self.format_response(db_iter)
+        try:
+            db_iter =  self.collection.find(search_filter, {'_id': False}) # TODO Refactor TopMovies logic
+        except errors.OperationFailure:
+            return ['']
+        return self.format_response(db_iter)
+
     def test_query(self):
         return [i for i in self.collection.find({'user': 'test', 'rating': {'$gte': '4'}})]
 
