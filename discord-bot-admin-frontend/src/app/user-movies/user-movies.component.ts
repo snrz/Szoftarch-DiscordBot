@@ -24,7 +24,7 @@ export class UserMoviesComponent implements OnInit {
       this.router.navigate([''])
   }
     this.is_admin = JSON.parse(sessionStorage.getItem("is_admin"))
-    this.movieService.getMoviesOfUser(JSON.parse(sessionStorage.getItem("selectedUser"))).subscribe((res) =>{
+    this.movieService.getMoviesOfUser(JSON.parse(sessionStorage.getItem("selectedUser")).name).subscribe((res) =>{
       this.userTop10 = res
     })
     

@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request
 from flask_cors import CORS
 import json
 
@@ -107,12 +107,14 @@ def get_all_user():
 
 @app.get("/blocklist/get")
 def get_blocked_users():
-    return manager.blocklist_get_current() # Iterator
+    return list(manager.blocklist_get_current()) # Iterator
 
 @app.post("/blocklist/add")
-def get_blocked_users():
-    return manager.blocklist_add_user(dict(request.json)['user'])
+def block_user():
+    manager.blocklist_add_user(dict(request.json))
+    return json.dumps({'success': True}), 200, {'ContentType':'application/json'}
 
 @app.post("/blocklist/delete")
-def get_blocked_users():
-    return manager.blocklist_del_current(dict(request.json)['user'])
+def unblock_user():
+    manager.blocklist_del_current(dict(request.json))
+    return json.dumps({'success': True}), 200, {'ContentType':'application/json'}
