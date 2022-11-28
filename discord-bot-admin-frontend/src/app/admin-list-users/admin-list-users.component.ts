@@ -38,6 +38,7 @@ export class AdminListUsersComponent implements OnInit {
 
   block(element: any){
     let block_url = "http://localhost:5000/blocklist/add"
+    element.blocked = true
     this.http.post(block_url, element).subscribe((res) => {
       
     })
