@@ -302,7 +302,7 @@ client = ClientClass()
 @client.tree.command(name='toggle_test', guild=discord.Object(id=guild_id))
 async def testmodal(interaction : discord.Interaction):
     if blocklist_interaction_gurad(interaction.user.name): # Guard
-        await interaction.response.send_message("You have been blocked by an admin")
+        await interaction.response.send_message("You have been blocked by an admin", ephemeral=True) # Ephemeral does work on interaction
         return
     if manager.get_user_item_count(user=interaction.user.name) == 10: # TODO: Align with frontend (MOVEME)
         await interaction.response.send_message("Your list is already populated, delete something before uploading")
@@ -313,12 +313,12 @@ async def testmodal(interaction : discord.Interaction):
 async def update_movie(ctx : commands.Context, args):
     ''' Update movie from users previous updates (search by title) '''
     if blocklist_interaction_gurad(ctx.author.name): # Guard
-        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        #await ctx.send("You have been blocked by an admin", ephemeral=True)
         return
     print(args) # TODO: Validation
     result = manager.get_user_movie_by_title(ctx.author.name, args)
     if not result:
-        await ctx.send("Couldn't find your movie. Upload it first.")
+        #await ctx.send("Couldn't find your movie. Upload it first.")
         return
     set_diff_store(result)
     
@@ -329,7 +329,7 @@ async def update_movie(ctx : commands.Context, args):
 @client.command()
 async def my_movies(ctx : commands.Context):
     if blocklist_interaction_gurad(ctx.author.name): # Guard
-        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        # await ctx.reply("You have been blocked by an admin", ephemeral=True) # Ephemeral doesn't work
         return
     r = await get_movies_of(ctx, ctx.author.name)
     await send_ctx_reply(ctx, '\n'.join(r))
@@ -337,7 +337,7 @@ async def my_movies(ctx : commands.Context):
 @client.command()
 async def movies_of(ctx : commands.Context, args):
     if blocklist_interaction_gurad(ctx.author.name): # Guard
-        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        #await send_ctx_reply(ctx, "You have been blocked by an admin")
         return
     r = await get_movies_of(ctx, args)
     if None in r: 
@@ -350,14 +350,14 @@ async def movies_of(ctx : commands.Context, args):
 @client.command()
 async def delete_my_movie(ctx : commands.Context, args):
     if blocklist_interaction_gurad(ctx.author.name): # Guard
-        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        #await send_ctx_reply(ctx, "You have been blocked by an admin")
         return
     await delete_movie_of(ctx, ctx.author.name, args)
 
 @client.command()
 async def delete_my_movies(ctx : commands.Context):
     if blocklist_interaction_gurad(ctx.author.name): # Guard
-        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        #await send_ctx_reply(ctx, "You have been blocked by an admin")
         return
     await delete_movies_of(ctx.author.name)
     await send_ctx_reply(ctx, "Movie list deleted.")
@@ -365,7 +365,7 @@ async def delete_my_movies(ctx : commands.Context):
 @client.command()
 async def spec_movies(ctx : commands.Context, args):
     if blocklist_interaction_gurad(ctx.author.name): # Guard
-        await send_ctx_reply(ctx, "You have been blocked by an admin")
+        #await send_ctx_reply(ctx, "You have been blocked by an admin")
         return
     await get_movies_by_query(ctx, args)
 
